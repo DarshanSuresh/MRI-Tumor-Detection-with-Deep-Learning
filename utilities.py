@@ -202,22 +202,14 @@ We need a custom loss function to train this ResUNet.So,  we have used the loss 
   year={2018}
 }
 '''
-
-def tversky(y_true, y_pred, smooth=1e-6):
+def tversky(y_true, y_pred, smooth = 1e-6):
     y_true_pos = K.flatten(y_true)
     y_pred_pos = K.flatten(y_pred)
-    
-    # Explicitly cast to 'float32'
-    y_true_pos = K.cast(y_true_pos, 'float32')
-    y_pred_pos = K.cast(y_pred_pos, 'float32')
-    
     true_pos = K.sum(y_true_pos * y_pred_pos)
-    false_neg = K.sum(y_true_pos * (1 - y_pred_pos))
-    false_pos = K.sum((1 - y_true_pos) * y_pred_pos)
-    
+    false_neg = K.sum(y_true_pos * (1-y_pred_pos))
+    false_pos = K.sum((1-y_true_pos)*y_pred_pos)
     alpha = 0.7
-    return (true_pos + smooth) / (true_pos + alpha * false_neg + (1 - alpha) * false_pos + smooth)
-
+    return (true_pos + smooth)/(true_pos + alpha*false_neg + (1-alpha)*false_pos + smooth)
 
 def tversky_loss(y_true, y_pred):
     return 1 - tversky(y_true,y_pred)
